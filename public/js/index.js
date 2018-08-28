@@ -36,12 +36,6 @@ socket.on('disconnect', function () {
 
 // });
 
-
-// socket.emit('createMessage' , {
-//     "from":"user@example.com",
-//     "text":"Hello Server..."
-// })
-
 socket.on('newMessage' , function (message) {
     console.log(message);
 })

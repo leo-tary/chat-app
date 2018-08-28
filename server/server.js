@@ -3,6 +3,8 @@ const express = require('express'); // Express internally uses built in node mod
 const http = require('http');
 const socketIO = require('socket.io');
 
+const {generateMessages} = require('./utils/generateMessage');
+
 const PORT = process.env.PORT || 9900;
 const publicPath = path.join(__dirname , '../public');
 
@@ -60,30 +62,18 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
 
         console.log(`Message created...` , message);
 
-        io.emit('newMessage' , {
-            "from":message.from,
-            "text":message.text,
-            "createdAt": new Date().getTime()
-        })
+        io.emit('newMessage' , generateMessages(message.from , message.text));
 
     })
 
 
-    socket.emit('newMessage' , {
-        "from": "Admin",
-        "text": "Welcome user to our chat app...",
-        "createdAt": new Date().getTime()
-    })
+    socket.emit('newMessage' , generateMessages("Admin" , "Welcome user to our chat app..."));
 
-    socket.broadcast.emit('newMessage' , {
-        "from": "Admin",
-        "text": "New user has joined the chat room...",
-        "createdAt": new Date().getTime()
-    })
+    socket.broadcast.emit('newMessage' , generateMessages("Admin" , "New user has joined the chat room..."));
 
 })
 
-app.use(express.static(publicPath));
+app.use(express.static(publicPath));    // basically used express for this
 
 // When we call app.listen, internally it only calls http.createServer just like "http.createServer(app)"
 // So http (as in module) always work behind the scene
