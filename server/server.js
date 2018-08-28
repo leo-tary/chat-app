@@ -26,7 +26,7 @@ const server = http.createServer(app);  // Configuring express to work with http
 const io = socketIO(server);            
 io.on('connection' , (socket) => {  // "socket" similar to the one created in index.html about users connected to server
  
-    console.log(`Welcome User...How are you today`);
+    // console.log(`Welcome User...How are you today`);
 
 
     socket.on('disconnect' , () => {
@@ -66,6 +66,17 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
             "createdAt": new Date().getTime()
         })
 
+    })
+
+
+    socket.emit('newMessage' , {
+        "from": "Admin",
+        "text": "Welcome user to our chat app..."
+    })
+
+    socket.broadcast.emit('newMessage' , {
+        "from": "Admin",
+        "text": "New user has joined the chat room..."
     })
 
 })
