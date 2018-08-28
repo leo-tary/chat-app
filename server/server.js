@@ -49,9 +49,9 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
     })
 
 
-    socket.on('createGeoLocation' , (position) => {
+    socket.on('createGeoLocation' , (coords) => {
 
-        io.emit('newMessage' , generateMessages(position.coords.latitude , position.coords.longitude));
+        io.emit('newMessage' , generateMessages("User" , `Latitude: ${coords.latitude} & Longitude: ${coords.longitude}`) , true);
 
     })
 

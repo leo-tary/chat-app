@@ -1,9 +1,10 @@
 
-const generateMessages = (from , text) => {
+const generateMessages = (from , text , assets = false) => {
 
     return {
         from ,
         text , 
+        assets ,
         createdAt: new Date().getTime()
     }
 
