@@ -12,32 +12,7 @@
     <p>Welcome to chat app</p>
 
     <script src = "/socket.io/socket.io.js"></script>
-    <script>
-    
-    /** 
-     *  a) Open & maintaining web socket connection (two-way communication i.e. Server -> Client & Client -> Server)
-     *  b) It all happen based on events i.e. events can be emitted either from client / server 
-     *      or client / server can listen to events
-     *  c) "connect" event exists on client (thanks to socket.io library) where we can do anything when "connect"
-     *      event is emitted.
-     * 
-    */
-        const socket = io();    
-    
-        // Here in callback we don't have access to socket as we are registering an event on socket
-        socket.on('connect' , () => {   
-
-            console.log(`Hello Server...I am good today`);
-
-        })
-
-        socket.on('disconnect' , () => {
-
-            console.log(`Goodbye Server...Nice to work today`);
-
-        })
-
-    </script>
+    <script src = "/js/index.js"></script>
 
 </body>
 
