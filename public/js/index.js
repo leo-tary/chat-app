@@ -16,11 +16,6 @@ socket.on('connect', function () {
 
     // Q) Why socket.emit within socket.on? We can also place this block outside of socket.io?
 
-    // socket.emit('createEmail' , {
-    //     "to":"server@example.com",
-    //     "text":"Hello Server...I am registered now..."
-    // })
-
 })
 
 socket.on('disconnect', function () {
@@ -38,4 +33,51 @@ socket.on('disconnect', function () {
 
 socket.on('newMessage' , function (message) {
     console.log(message);
+    $("#messages").append($("<li></li>").text(`${message.from}: ${message.text}`));
+})
+
+jQuery('#message-form').on('submit' , function (e) {
+
+    e.preventDefault();
+
+    socket.emit('createMessage' , {
+        "from":"User",
+        "text":jQuery("[name=message]").val()
+    } , function (acknowledgement) {
+
+        console.log('Response ' , acknowledgement);
+
+    })
+
+})
+
+let getLocation = $("#send-location");
+getLocation.on("click" , function (e) {
+
+    let locator = document.getElementById('location-failing');
+    locator.innerHTML = "<p>Locating...</p>";
+    if(!navigator.getLocation){
+
+        locator.innerHTML = "<p>Geolocation is not supported by your browser</p>";
+        return;
+
+    }else{
+
+        navigator.geolocation.getCurrentPosition(function(position) {
+
+            // socket.emit('createGeoLocation' , {
+            //     "from":"User",
+            //     "coords":position
+            // })
+
+            console.log(position);
+
+        } , function() {
+
+            locator.innerHTML = "<p>Unable to fetch location</p>";
+            return;
+        })
+
+    }
+
 })

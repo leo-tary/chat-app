@@ -34,35 +34,24 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
     socket.on('disconnect' , () => {
 
         console.log(`Goodbye User...Nice to have you here today`);
+        io.emit('newMessage' , generateMessages("Admin" , "User has left the chat room..."));
 
     });
 
-    // socket.emit('newEmail' , {
-
-    //     "from":"server@example.com",
-    //     "text":"Welcome Aboard User..."
-
-    // });
-
-    // socket.on('createEmail' , (email) => {
-
-    //     console.log('Email Created...' , email);
-
-    // })
-
-
-    // socket.emit('newMessage' , {
-    //     "from": "server@gmail.com",
-    //     "text": "Hello New User...Welcome",
-    //     "createdAt":1535443583
-    // })
-
-
-    socket.on('createMessage' , (message) => {
+    // callback for "Server Acknowledgement"
+    socket.on('createMessage' , (message , callback) => {
 
         console.log(`Message created...` , message);
+        callback('Acknowledged from server...');
 
         io.emit('newMessage' , generateMessages(message.from , message.text));
+
+    })
+
+
+    socket.on('createGeoLocation' , (position) => {
+
+        io.emit('newMessage' , generateMessages(position.coords.latitude , position.coords.longitude));
 
     })
 
