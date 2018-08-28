@@ -71,12 +71,14 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
 
     socket.emit('newMessage' , {
         "from": "Admin",
-        "text": "Welcome user to our chat app..."
+        "text": "Welcome user to our chat app...",
+        "createdAt": new Date().getTime()
     })
 
     socket.broadcast.emit('newMessage' , {
         "from": "Admin",
-        "text": "New user has joined the chat room..."
+        "text": "New user has joined the chat room...",
+        "createdAt": new Date().getTime()
     })
 
 })
