@@ -37,10 +37,10 @@ socket.on('disconnect', function () {
 // });
 
 
-socket.emit('createMessage' , {
-    "to":"server@example.com",
-    "text":"Thank You Server..."
-})
+// socket.emit('createMessage' , {
+//     "from":"user@example.com",
+//     "text":"Hello Server..."
+// })
 
 socket.on('newMessage' , function (message) {
     console.log(`New message has arrived...` , message);

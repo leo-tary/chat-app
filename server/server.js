@@ -49,16 +49,22 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
     // })
 
 
-    socket.emit('newMessage' , {
-        "from": "server@gmail.com",
-        "text": "Hello New User...Welcome",
-        "createdAt":1535443583
-    })
+    // socket.emit('newMessage' , {
+    //     "from": "server@gmail.com",
+    //     "text": "Hello New User...Welcome",
+    //     "createdAt":1535443583
+    // })
 
 
     socket.on('createMessage' , (message) => {
 
         console.log(`Message created...` , message);
+
+        io.emit('newMessage' , {
+            "from":message.from,
+            "text":message.text,
+            "createdAt": new Date().getTime()
+        })
 
     })
 
