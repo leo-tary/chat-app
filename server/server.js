@@ -3,7 +3,7 @@ const express = require('express'); // Express internally uses built in node mod
 const http = require('http');
 const socketIO = require('socket.io');
 
-const {generateMessages} = require('./utils/generateMessage');
+const {generateMessages , showCurrentLocation} = require('./utils/generateMessage');
 
 const PORT = process.env.PORT || 9900;
 const publicPath = path.join(__dirname , '../public');
@@ -26,7 +26,7 @@ const server = http.createServer(app);  // Configuring express to work with http
  * 
 */
 const io = socketIO(server);            
-io.on('connection' , (socket) => {  // "socket" similar to the one created in index.html about users connected to server
+io.on('connection' , (socket) => {  // "socket" similar to the one created in index.js about users connected to server
  
     // console.log(`Welcome User...How are you today`);
 
@@ -42,8 +42,8 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
     socket.on('createMessage' , (message , callback) => {
 
         console.log(`Message created...` , message);
-        callback('Acknowledged from server...');
-
+        // callback('Acknowledged from server...');
+        callback();
         io.emit('newMessage' , generateMessages(message.from , message.text));
 
     })
@@ -51,16 +51,19 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
 
     socket.on('createGeoLocation' , (coords) => {
 
-        io.emit('newMessage' , generateMessages("User" , `Latitude: ${coords.latitude} & Longitude: ${coords.longitude}`) , true);
+        io.emit('newGeoLocation' , showCurrentLocation("User" , coords));
 
     })
 
-
+    // message only to user who has joined
     socket.emit('newMessage' , generateMessages("Admin" , "Welcome user to our chat app..."));
 
+    // message / broadcast everyone but the user who has joined
     socket.broadcast.emit('newMessage' , generateMessages("Admin" , "New user has joined the chat room..."));
 
 })
+
+// console.log(app.get('env'));
 
 app.use(express.static(publicPath));    // basically used express for this
 

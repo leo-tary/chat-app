@@ -14,8 +14,6 @@ socket.on('connect', function () {
 
     console.log(`Hello Server...I am good today`);
 
-    // Q) Why socket.emit within socket.on? We can also place this block outside of socket.io?
-
 })
 
 socket.on('disconnect', function () {
@@ -24,29 +22,53 @@ socket.on('disconnect', function () {
 
 })
 
-// So basically this is more like listening to event emitted at server's end
-// socket.on('newEmail' , function (email) {
-
-//     console.log('You have got the mail...', email);
-
-// });
+// So this is more like listening to event emitted at server's end
 
 socket.on('newMessage' , function (message) {
-    console.log(message);
+    // console.log(message);
 
-    $("#messages").append($("<li></li>").text(`${message.from}: ${message.text}`));
+    let sentAt = moment(message.createdAt).format("MMM Do YYYY h:mm a");
+
+    let template = $('#message-template').html();   // Pull out the html for the specific ID
+    let html = Mustache.render(template , {
+            text: message.text,
+            from: message.from,
+            sentAt: sentAt
+    });                                             // render the template data
+    $('#messages').append(html);                    // append the template to the specific ID
 })
 
-jQuery('#message-form').on('submit' , function (e) {
+
+socket.on('newGeoLocation' , function (message) {
+
+    // console.log(message);
+
+    let sentAt = moment(message.createdAt).format("MMM Do YYYY h:mm a");
+    let mapSrc = `${message.mapsUrl} ${message.latitude} , ${message.longitude}${message.mapsParams}${message.MAPS_API_KEY}`;
+
+    let template = $("#location-template").html();
+    let html = Mustache.render(template , {
+        from: message.from,
+        url: message.hoverUrl,
+        mapSrc,
+        sentAt
+    })
+
+    $('#messages').append(html);
+})
+
+
+$('#message-form').on('submit' , function (e) {
 
     e.preventDefault();
-
+    let messageTextBox = $("[name=message]");
     socket.emit('createMessage' , {
         "from":"User",
-        "text":jQuery("[name=message]").val()
+        "text":messageTextBox.val()
     } , function (acknowledgement) {
 
-        console.log('Response ' , acknowledgement);
+        // console.log('Response ' , acknowledgement);
+        messageTextBox.val('');
 
     })
 
@@ -55,26 +77,32 @@ jQuery('#message-form').on('submit' , function (e) {
 let getLocation = $("#send-location");
 getLocation.on("click" , function () {
 
-    let locator = document.getElementById('location-info');
-    locator.innerHTML = "<p>Locating...</p>";
+    let locator = $("#send-location");
+    locator.text("Sharing Location...").attr("disabled", "disabled");
+
+    // let locator = document.getElementById('location-info');
+    // locator.innerHTML = "<p>Locating...</p>";    
     if(!navigator.geolocation){
 
-        locator.innerHTML = "<p>Geolocation is not supported by your browser</p>";
+        // locator.innerHTML = "<p>Geolocation is not supported by your browser</p>";
+        locator.removeAttr("disabled");
         return;
 
     }else{
         navigator.geolocation.getCurrentPosition(function(position) {
 
-            locator.innerHTML = "";
+            locator.text("Share Location").removeAttr("disabled");
+            // locator.innerHTML = "";
             socket.emit('createGeoLocation' , {
                 latitude: position.coords.latitude,
                 longitude: position.coords.longitude
             })
 
         } , function() {
-
-            locator.innerHTML = "<p>Unable to fetch location</p>";
-            return;
+            
+            console.log('Message Delivered...');
+            // locator.innerHTML = "<p>Unable to fetch location</p>";
+            // return;
         })
 
     }
