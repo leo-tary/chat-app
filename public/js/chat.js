@@ -112,6 +112,12 @@ getLocation.on("click" , function () {
 
 })
 
+/**
+ * 
+ * Lots happening here...
+ * 
+ */
+
 function scrollToBottom(){
 
     const messages = $('#messages');
