@@ -9,6 +9,7 @@
 */
 const socket = io();
 
+
 // Here in callback we don't have access to socket as we are registering an event on socket
 socket.on('connect', function () {
 
@@ -36,10 +37,11 @@ socket.on('newMessage' , function (message) {
             sentAt: sentAt
     });                                             // render the template data
     $('#messages').append(html);                    // append the template to the specific ID
+    scrollToBottom();
 })
 
 
-socket.on('newGeoLocation' , function (message) {
+socket.on('newGeoLocationMessage' , function (message) {
 
     // console.log(message);
 
@@ -55,6 +57,7 @@ socket.on('newGeoLocation' , function (message) {
     })
 
     $('#messages').append(html);
+    scrollToBottom();
 })
 
 
@@ -108,3 +111,20 @@ getLocation.on("click" , function () {
     }
 
 })
+
+function scrollToBottom(){
+
+    const messages = $('#messages');
+    const newMessage = messages.children("li:last-child");
+
+    const clientHeight = messages.prop('clientHeight');   // cross-browser way to get the height - replacement for jQuery
+    const scrollTop =   messages.prop('scrollTop');
+    const scrollHeight = messages.prop('scrollHeight');
+    const newMessageHeight = newMessage.innerHeight();    // this takes account of all padding / margin we have added
+    const lastMessageHeight = newMessage.prev().innerHeight();
+
+    if(clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight){
+        messages.scrollTop(scrollHeight);
+    }
+
+}

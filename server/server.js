@@ -51,7 +51,7 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
 
     socket.on('createGeoLocation' , (coords) => {
 
-        io.emit('newGeoLocation' , showCurrentLocation("User" , coords));
+        io.emit('newGeoLocationMessage' , showCurrentLocation("User" , coords));
 
     })
 
