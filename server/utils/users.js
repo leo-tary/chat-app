@@ -2,10 +2,13 @@
 const _ = require('lodash');
 /**
  * 
+ *  Simple Users Class with add/remove user utility functions
+ *  Only pertains to Array (in-memory)
+ * 
  *  Sample: 
  * 
  *  [{name: "ABC" , room: "Angular"} , {name:"XYZ" , room: "React"}]
- * 
+ *
  */
 
 class Users {
@@ -14,14 +17,14 @@ class Users {
 
         this.users = [];
 
-        // this.users = [
-        //     {id: 1 , name: "Tarun" , room:"Node"},
-        //     {id: 2 , name: "Tary" , room: "React"},
-        //     {id:3 , name: "Tonu" , room: "Node"}
-        // ];
-
     }
 
+/**
+ * 
+ *  Pulls Only list of users currently logged in
+ *  @return Users Array
+ * 
+ */
 
     getUserList(){
 
@@ -29,6 +32,15 @@ class Users {
 
     }
 
+/**
+ * 
+ *  Adding a new user to users array
+ *  @param id String (Socket Id) 
+ *  @param name String
+ *  @param room String
+ *  @return user Object
+ * 
+ */    
 
     addUser(id , name , room){
 
@@ -41,6 +53,14 @@ class Users {
         this.users.push(user);
         return user;
     }
+
+/**
+ * 
+ *  Removing user from users array i.e. user connection removed
+ *  @param id String (Socket ID)
+ *  @return users Array
+ * 
+ */
 
     removeUser(id) {
 
@@ -56,9 +76,17 @@ class Users {
     }
 
 
+/**
+ * 
+ *  Get User details based on user / socket id
+ *  @param id Mixed (can be socket id) 
+ *  @return user Object 
+ * 
+ */
+
     getUser(id) {
 
-        let userInfo = this.users.find((user) => {              // find returns Object
+        let userInfo = this.users.find((user) => {              // returns Object
             return user.id === id
         })
 
@@ -66,10 +94,17 @@ class Users {
 
     }
 
+/**
+ * 
+ *  Get currently logged in users in a particular room
+ *  @param room String 
+ *  @return users Array 
+ * 
+ */
 
     getUsersInRoom(room){
 
-        let filteredUsers = this.users.filter((user) => {       // filter returns array
+        let filteredUsers = this.users.filter((user) => {       // returns array
 
             return user.room === room;
 
@@ -84,6 +119,14 @@ class Users {
 
     }
 
+/**
+ * 
+ *  Scan if a user with Yak Name already exists in the Chat Room
+ *  @param username String 
+ *  @param chatroom String
+ *  @return true/false Boolean 
+ * 
+ */
 
     isUserExists(username , chatroom){
 

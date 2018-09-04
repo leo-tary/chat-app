@@ -14,8 +14,6 @@ const generateMessages = (from , text) => {
 
 const showCurrentLocation = (from , coords) => {
 
-    console.log(config.get('STATIC_MAP_KEY'));
-
     return {
         from,
         hoverUrl: `https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`,

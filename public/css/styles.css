@@ -81,8 +81,11 @@
   
   .form-field label {
     display: block;
-    margin-bottom: 7px;
-    color: #e6eaee;
+    margin: 5px 5px 5px 0px;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    color: #b3b3b3;
+    font-style: italic;
+    font-weight: 500;
   }
   
   .form-field input, .form-field select {
@@ -242,3 +245,31 @@
     color: white;
     padding: 10px;
   }
+
+  .pre-requisites{
+    display: block;   
+  }
+
+  .pre-requisites ul li{
+
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+    color: white;
+    font-style: italic;
+    opacity: 1; /* Firefox */ 
+  }
+
+
+  ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: rgb(47, 65, 119);
+    opacity: 1; /* Firefox */
+    font-weight: 500;
+    font-style: italic;
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: red;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+    color: red;
+}

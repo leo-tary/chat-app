@@ -1,8 +1,13 @@
+
+// Loading native & external libraries
+
 const path = require('path');
 const express = require('express'); // Express internally uses built in node module "http" for creating web server
 const http = require('http');
 const socketIO = require('socket.io');
 const _ = require('lodash');
+
+// Loading custom libraries
 
 const {generateMessages , showCurrentLocation} = require('./utils/generateMessage');
 const {isValidString , isEmptyObject} = require('./utils/validation');
@@ -18,6 +23,9 @@ let users = new Users();                                // Instantiating Empty U
 // https://socket.io/docs/emit-cheatsheet/
 
 /**
+ * 
+ *  Fun Facts:-
+ * 
  *  Configuring server to use / work with socketIO
  * 
  *  With this (Importing socket.io) we also got access to sockets javascript library to work with socketio on client
@@ -31,6 +39,8 @@ let users = new Users();                                // Instantiating Empty U
  *  while socket just represents a single connection. 
  * 
 */
+
+
 const io = socketIO(server);            
 io.on('connection' , (socket) => {  // "socket" similar to the one created in index.js about users connected to server
 
@@ -42,7 +52,7 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
 
         if(isUserExists){
 
-            callback("Display name already taken...");
+            callback("Yak Name already taken...");
 
         }else{
 
@@ -50,9 +60,7 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
 
                 if(isValidString(chatObject.name) && isValidString(chatObject.chatroom)){
     
-                    // socket.username = chatObject.name;
                     socket.join(chatObject.chatroom);
-                    // users.removeUser(socket.id);
                     users.addUser(socket.id , chatObject.name , chatObject.chatroom);
     
                     io.to(chatObject.chatroom).emit('updateUsers' , users.getUsersInRoom(chatObject.chatroom));
@@ -63,7 +71,7 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
                     // message / broadcast everyone but the user who has joined
                     socket.broadcast.to(chatObject.chatroom).emit('newMessage' , generateMessages("Admin" , `${_.upperFirst(chatObject.name)} has joined the ${_.upperFirst(chatObject.chatroom)} chat ...`));
                     
-                    callback(undefined , chatObject.chatroom);
+                    callback(undefined , _.upperFirst(chatObject.chatroom));
     
                 }else{
                     callback('Invalid name / chat room provided');
@@ -82,7 +90,6 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
 
     socket.on('disconnect' , () => {
 
-        // console.log(users);
         let user = users.removeUser(socket.id); // required because we need to have user-chat properties
 
         if(user){
@@ -95,10 +102,9 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
 
     });
 
+
     // callback for "Server Acknowledgement"
     socket.on('createMessage' , (message , callback) => {
-
-        // callback('Acknowledged from server...');
 
         let user = users.getUser(socket.id);
 
@@ -117,15 +123,12 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
 
     socket.on('createGeoLocation' , (coords) => {
 
-
         let user = users.getUser(socket.id);
 
         if(user){
 
             io.to(user.room).emit('newGeoLocationMessage' , showCurrentLocation(_.upperFirst(user.name) , coords));
-
         }
-
 
     })
 
@@ -133,7 +136,7 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
 
     socket.on("start-typing" , () => {
 
-        let user = users.getUser(socket.id);
+        let user = users.getUser(socket.id);    // this should be an array - work to do here
 
         if(user) {
 
@@ -158,12 +161,11 @@ io.on('connection' , (socket) => {  // "socket" similar to the one created in in
 })
 
 
-// console.log(app.get('env'));
-
 app.use(express.static(publicPath));    // basically used express for this
 
 // When we invoke app.listen, internally it only calls http.createServer just like "http.createServer(app)"
 // So http (as in module) always work behind the scene
+
 server.listen(PORT , () => {
 
     console.log(`Chat Server Fired Up @${PORT}...`);

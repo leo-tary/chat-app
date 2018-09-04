@@ -1,13 +1,20 @@
 
-const isValidString = (data) => {
+/**
+ * 
+ *  Server-side validations for the input provided
+ * 
+ */
 
-    return typeof data === 'string' && data.trim().length > 0;
+
+const isValidString = (input) => {
+
+    return typeof input === 'string' && input.trim().length > 0;
 
 }
 
-const isEmptyObject = (dataObject) => {
+const isEmptyObject = (inputObject) => {
 
-    return Object.keys(dataObject).length;
+    return Object.keys(inputObject).length;
 
 }
 
