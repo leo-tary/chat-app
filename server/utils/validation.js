@@ -11,7 +11,6 @@ const isEmptyObject = (dataObject) => {
 
 }
 
-
 module.exports = {
     isValidString ,
     isEmptyObject

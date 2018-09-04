@@ -14,6 +14,8 @@ const generateMessages = (from , text) => {
 
 const showCurrentLocation = (from , coords) => {
 
+    console.log(config.get('STATIC_MAP_KEY'));
+
     return {
         from,
         hoverUrl: `https://www.google.com/maps?q=${coords.latitude},${coords.longitude}`,
@@ -22,7 +24,7 @@ const showCurrentLocation = (from , coords) => {
         MAPS_API_KEY: config.get('STATIC_MAP_KEY'),
         latitude: coords.latitude,
         longitude: coords.longitude,
-        status: config.get("MESSAGE_DELIVERED"),
+        // status: config.get("MESSAGE_DELIVERED"),
         createdAt: moment().valueOf()
     }
 
