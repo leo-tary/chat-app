@@ -16,6 +16,7 @@
   "dependencies": {
     "config": "^2.0.1",
     "express": "^4.16.3",
+    "lodash": "^4.17.10",
     "moment": "^2.22.2",
     "socket.io": "^2.1.1"
   }

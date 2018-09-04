@@ -9,16 +9,62 @@
 */
 const socket = io();
 
+let messageTextBox = $("[name=message]");
+let typeInfo = $("#type-info");
+let timeout;
+let chatObject = $.deparam(window.location.search);
+
+/**
+ * 
+ * "location" is the global object provided by the browser which contains quite a bit of information 
+ * as hostname , path , port , search params(query string) etc.
+ * 
+ *  Above properties can be fetched using:- window.location.<property_name> i.e. window.location.search or
+ *  window.location.path etc.
+ * 
+ */
 
 // Here in callback we don't have access to socket as we are registering an event on socket
 socket.on('connect', function () {
 
-    console.log(`Hello Server...I am good today`);
+
+    socket.on("updateUsers" , function(users) {
+
+        console.log(users);
+        let ol = $('<ol></ol>');
+
+        users.forEach(function(user) {
+            ol.append($('<li></li>').text(user));
+        })
+
+        $('#users').html(ol);
+    });
+
+    // emitting "custom" join event (this'll serve to join a particular room)
+
+    socket.emit('join' , chatObject , function(error , chatroom) {
+
+        // Things to do--
+        // 1) Encrypt user & chat room names so that it cannot be forged
+        // 2) Add more validations on strings & objects (validation.js)
+        // 3) Display proper names when "user" sends a message  - Done
+
+        if(error){          // this should be handled on client side (using Ajax)
+            alert(error);
+            window.location.href = '/';
+        }else{
+            let groupName = $('#group-name');
+            groupName.text(chatroom + ' Groupies');
+            console.log('Welcome to apna chat...');
+        }
+
+    })
 
 })
 
 socket.on('disconnect', function () {
 
+    
     console.log(`Goodbye Server...Nice to work today`);
 
 })
@@ -34,8 +80,10 @@ socket.on('newMessage' , function (message) {
     let html = Mustache.render(template , {
             text: message.text,
             from: message.from,
-            sentAt: sentAt
+            sentAt: sentAt,
+            status: "Delivered"
     });                                             // render the template data
+      
     $('#messages').append(html);                    // append the template to the specific ID
     scrollToBottom();
 })
@@ -53,24 +101,56 @@ socket.on('newGeoLocationMessage' , function (message) {
         from: message.from,
         url: message.hoverUrl,
         mapSrc,
-        sentAt
+        sentAt,
+        status: "Delivered"
     })
 
     $('#messages').append(html);
     scrollToBottom();
 })
 
+messageTextBox.bind("keydown" , () => {
+
+    clearTimeout(timeout);
+    socket.emit("start-typing");
+})
+
+socket.on("typing" , function(userObj) {
+
+    typeInfo.text(`${userObj.username} is typing...`);
+
+})
+
+
+
+messageTextBox.bind("keyup" , () => {
+
+    timeout = setTimeout(() => {
+
+        socket.emit("stop-typing");
+
+    }, 300)
+
+})
+
+socket.on("no-typing" , function(userObj) {
+
+    typeInfo.text('');
+
+})
 
 $('#message-form').on('submit' , function (e) {
 
     e.preventDefault();
-    let messageTextBox = $("[name=message]");
     socket.emit('createMessage' , {
-        "from":"User",
         "text":messageTextBox.val()
     } , function (acknowledgement) {
 
-        // console.log('Response ' , acknowledgement);
+        console.log('Response ' , acknowledgement);
+        // let messageDisplay = $('#message-status');
+        // if(acknowledgement.messageStatus == "sent") {
+        //     messageDisplay.text("sent");
+        // }
         messageTextBox.val('');
 
     })
@@ -111,6 +191,7 @@ getLocation.on("click" , function () {
     }
 
 })
+
 
 /**
  * 

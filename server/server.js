@@ -1,15 +1,21 @@
 const path = require('path');
-const express = require('express'); // Express internally uses built in node module http for creating web server
+const express = require('express'); // Express internally uses built in node module "http" for creating web server
 const http = require('http');
 const socketIO = require('socket.io');
+const _ = require('lodash');
 
 const {generateMessages , showCurrentLocation} = require('./utils/generateMessage');
+const {isValidString , isEmptyObject} = require('./utils/validation');
+const {Users} = require('./utils/users');
 
 const PORT = process.env.PORT || 9900;
 const publicPath = path.join(__dirname , '../public');
 
 const app = express();
-const server = http.createServer(app);  // Configuring express to work with http (module)
+const server = http.createServer(app);                  // Configuring express to work with http (module)
+let users = new Users();                                // Instantiating Empty Users Object (array of objects)
+
+// https://socket.io/docs/emit-cheatsheet/
 
 /**
  *  Configuring server to use / work with socketIO
@@ -27,47 +33,136 @@ const server = http.createServer(app);  // Configuring express to work with http
 */
 const io = socketIO(server);            
 io.on('connection' , (socket) => {  // "socket" similar to the one created in index.js about users connected to server
- 
+
     // console.log(`Welcome User...How are you today`);
+
+    socket.on('join' , (chatObject , callback) => {
+
+        let isUserExists = users.isUserExists(chatObject.name , chatObject.chatroom);
+
+        if(isUserExists){
+
+            callback("Display name already taken...");
+
+        }else{
+
+            if(isEmptyObject(chatObject) > 0){
+
+                if(isValidString(chatObject.name) && isValidString(chatObject.chatroom)){
+    
+                    // socket.username = chatObject.name;
+                    socket.join(chatObject.chatroom);
+                    // users.removeUser(socket.id);
+                    users.addUser(socket.id , chatObject.name , chatObject.chatroom);
+    
+                    io.to(chatObject.chatroom).emit('updateUsers' , users.getUsersInRoom(chatObject.chatroom));
+    
+                    // message only to user who has joined
+                    socket.emit('newMessage' , generateMessages("Admin" , `Welcome ${_.upperFirst(chatObject.name)} to our chat app...`));
+    
+                    // message / broadcast everyone but the user who has joined
+                    socket.broadcast.to(chatObject.chatroom).emit('newMessage' , generateMessages("Admin" , `${_.upperFirst(chatObject.name)} has joined the ${_.upperFirst(chatObject.chatroom)} chat ...`));
+                    
+                    callback(undefined , chatObject.chatroom);
+    
+                }else{
+                    callback('Invalid name / chat room provided');
+                }
+    
+            }else{
+                callback('Empty details');
+            }
+
+        }
+
+
+
+    })
 
 
     socket.on('disconnect' , () => {
 
-        console.log(`Goodbye User...Nice to have you here today`);
-        io.emit('newMessage' , generateMessages("Admin" , "User has left the chat room..."));
+        // console.log(users);
+        let user = users.removeUser(socket.id); // required because we need to have user-chat properties
+
+        if(user){
+
+            console.log(`Goodbye ${user.name}...Nice to have you here today`);
+            io.to(user.room).emit('updateUsers' , users.getUsersInRoom(user.room));
+            io.to(user.room).emit('newMessage' , generateMessages("Admin" , `${user.name} has left the ${user.room} room...`));
+
+        }
 
     });
 
     // callback for "Server Acknowledgement"
     socket.on('createMessage' , (message , callback) => {
 
-        console.log(`Message created...` , message);
         // callback('Acknowledged from server...');
-        callback();
-        io.emit('newMessage' , generateMessages(message.from , message.text));
+
+        let user = users.getUser(socket.id);
+
+        if(user && isValidString(message.text)){
+
+            callback({
+                messageStatus: "sent"
+            });
+    
+            io.to(user.room).emit('newMessage' , generateMessages(_.upperFirst(user.name) , message.text));
+
+        }
 
     })
 
 
     socket.on('createGeoLocation' , (coords) => {
 
-        io.emit('newGeoLocationMessage' , showCurrentLocation("User" , coords));
+
+        let user = users.getUser(socket.id);
+
+        if(user){
+
+            io.to(user.room).emit('newGeoLocationMessage' , showCurrentLocation(_.upperFirst(user.name) , coords));
+
+        }
+
 
     })
 
-    // message only to user who has joined
-    socket.emit('newMessage' , generateMessages("Admin" , "Welcome user to our chat app..."));
 
-    // message / broadcast everyone but the user who has joined
-    socket.broadcast.emit('newMessage' , generateMessages("Admin" , "New user has joined the chat room..."));
+
+    socket.on("start-typing" , () => {
+
+        let user = users.getUser(socket.id);
+
+        if(user) {
+
+            socket.broadcast.to(user.room).emit("typing" , {username: user.name});
+
+        }
+        
+    })
+
+
+    socket.on("stop-typing" , () => {
+
+        let user = users.getUser(socket.id);
+
+        setTimeout(() => {
+            socket.broadcast.to(user.room).emit("no-typing" , {username: user.name});
+        } , 800)
+        
+
+    })
 
 })
+
 
 // console.log(app.get('env'));
 
 app.use(express.static(publicPath));    // basically used express for this
 
-// When we call app.listen, internally it only calls http.createServer just like "http.createServer(app)"
+// When we invoke app.listen, internally it only calls http.createServer just like "http.createServer(app)"
 // So http (as in module) always work behind the scene
 server.listen(PORT , () => {
 

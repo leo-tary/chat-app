@@ -22,6 +22,7 @@ const showCurrentLocation = (from , coords) => {
         MAPS_API_KEY: config.get('STATIC_MAP_KEY'),
         latitude: coords.latitude,
         longitude: coords.longitude,
+        status: config.get("MESSAGE_DELIVERED"),
         createdAt: moment().valueOf()
     }
 

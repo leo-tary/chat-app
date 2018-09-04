@@ -1,4 +1,5 @@
 {
     "GOOGLE_STATIC_MAPS_URL":"https://maps.googleapis.com/maps/api/staticmap?center=",
-    "GOOGLE_STATIC_MAPS_PARAMS":"&zoom=13&size=150x150&sensor=false&key="
+    "GOOGLE_STATIC_MAPS_PARAMS":"&zoom=13&size=150x150&sensor=false&key=",
+    "MESSAGE_DELIVERED": "Delivered"
 }

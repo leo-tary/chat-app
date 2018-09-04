@@ -4,7 +4,7 @@
 
     <head>
         <meta charset="utf-8">
-        <title>JOIN | CHAT | ENJOY</title>   
+        <title>Join | Talk | Yak</title>   
         <meta name="viewport" content="width=device-width , initial-scale=1 , user-scalable=no">
         <link rel="stylesheet" href="/css/styles.css" />
     </head>
@@ -13,21 +13,24 @@
         <div class="centered-form__form">
             <form action="/chat.html">
                 <div class="form-field">
-                    <h3>Join | Chat</h3>
+                    <h3>Join | Yak</h3>
                 </div>
                 <div class="form-field">
                     <label>Display Name</label>
-                    <input name="name" type="text" autofocus />
+                    <input name="name" type="text" autofocus id="username"/>
                 </div>
                 <div class="form-field">
                     <label>Chat Room</label>
-                    <input name="chat-room" type="text" />
+                    <input name="chatroom" type="text" id="chatroom"/>
                 </div>
                 <div class="form-field">
-                    <button>Join</button>
+                    <button class="join-chat">Join</button>
                 </div>
             </form>
         </div>
+
+        <script src = "/js/libs/jquery-3.3.1.min.js"></script>
+        <script src = "/js/index.js"></script>
     </body>
 
 </html>

@@ -6,35 +6,33 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width , initial-scale=1 , user-scalable=no">
     <link rel="stylesheet" href="/css/styles.css" />
-    <title>CHAT NOW</title>
+    <title>Chat Now</title>
 </head>
 
 <body class="chat">
 
     <div class="chat__sidebar">
-        <h3>Groupies</h3>
+        <h4 id="group-name">Groupies</h4>
         <div id="users"></div>
     </div>
 
     <div class="chat__main">
         <ol id="messages" class="chat__messages"></ol>
 
+        <div id="type-info" class = "type-info"></div>
         <div class="chat__footer">
-        <form id = "message-form">
+            <form id = "message-form">
 
-            <input name="message" type="text" placeholder="message goes here..." autocomplete="off" autofocus/>
-            <button>Chat</button>
-        
-        </form>
+                <input name="message" type="text" placeholder="message goes here..." autocomplete="off" autofocus/>
+                <button>Gab It</button>
+            
+            </form>
 
-        <button id="send-location">Share Location</button>
-        <div id="location-info"></div>
+            <button id="send-location">Share Location</button>
         </div>
     </div>
 
     <script id = "message-template" type="text/template">
-    
-        <!-- <b>{{from}} {{sent}}: {{text}}</b> -->
 
         <li class = "message">
             <div class="message__title">
@@ -42,7 +40,8 @@
                 <span>{{sentAt}}</span>
             </div>
             <div class="message__body">
-                <p>{{text}}</p>
+                <span>{{text}}</span>
+                <span id="message-status" class="message-status">{{status}}</span>
             </div>
         </li>
 
@@ -61,6 +60,7 @@
                         <img src = "{{mapSrc}}"></img>
                     </a>
                 </span>
+                <span id="message-status" class="message-status">{{status}}</span>
             </div>
         <li>
 
@@ -71,6 +71,7 @@
     <script src = "/js/libs/jquery-3.3.1.min.js"></script>
     <script src = "/js/libs/moment.js"></script>
     <script src = "/js/libs/mustache.js"></script>
+    <script src = "/js/libs/deparam.js"></script>
     <script src = "/js/chat.js"></script>
 
 </body>
