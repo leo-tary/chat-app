@@ -32,10 +32,8 @@ let getLocation = $("#send-location");
 
 socket.on('connect', function () {
 
-
     socket.on("updateUsers" , function(users) {
 
-        console.log(users);
         let ol = $('<ol></ol>');
 
         users.forEach(function(user) {
